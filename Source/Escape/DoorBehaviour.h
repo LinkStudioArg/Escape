@@ -15,6 +15,7 @@ private:
 
 public:	
 	AActor *owner;
+	float maxAngle = 120.0f;
 	// Sets default values for this component's properties
 	UDoorBehaviour();	
 	// Called when the game starts

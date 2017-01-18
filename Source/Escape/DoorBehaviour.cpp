@@ -32,20 +32,20 @@ void UDoorBehaviour::TickComponent( float DeltaTime, ELevelTick TickType, FActor
 
 	float speed = 1.5f;
 
-	float angle = 90.0f * DeltaTime * speed;
+	float angle = maxAngle * DeltaTime * speed;
 
 	FRotator newRotation = FRotator(0.0f, -angle, 0.0f);
 
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *(owner->GetActorRotation().ToString()));
 
-	if (owner->GetActorRotation().Yaw > -90.0f && !doorOpened)
+	if (owner->GetActorRotation().Yaw > -maxAngle && !doorOpened)
 		this->owner->AddActorLocalRotation(newRotation);
 	else
 	{
 		if (!doorOpened)
 		{
 			doorOpened = true;
-			this->owner->SetActorRotation(FRotator(0.0f, -90.0f, 0));
+			this->owner->SetActorRotation(FRotator(0.0f, -maxAngle, 0));
 		}
 	}
 }
