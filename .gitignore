@@ -5,3 +5,5 @@
 /Saved/*
 /Content/StarterContent/*
 *.VC.db
+.VC.opendb
+*.opendb

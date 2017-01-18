@@ -12,9 +12,12 @@ class ESCAPE_API UDoorBehaviour : public UActorComponent
 	GENERATED_BODY()
 private:
 	bool doorOpened = false;
-
-public:	
 	AActor *owner;
+	UPROPERTY(EditAnywhere)
+	ATriggerVolume *trigger;
+public:	
+	
+	UPROPERTY(EditAnywhere)
 	float maxAngle = 120.0f;
 	// Sets default values for this component's properties
 	UDoorBehaviour();	
