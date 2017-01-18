@@ -30,6 +30,13 @@ void UDoorBehaviour::TickComponent( float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
+	if (trigger->IsOverlappingActor(TriggeringPawn))
+		OpenDoor(DeltaTime);
+	
+}
+
+void UDoorBehaviour::OpenDoor(float DeltaTime)
+{
 	float speed = 1.5f;
 
 	float angle = maxAngle * DeltaTime * speed;
