@@ -17,11 +17,15 @@ private:
 	ATriggerVolume *trigger;
 
 	UPROPERTY(EditAnywhere)
-		APawn *TriggeringPawn;
+	APawn *TriggeringPawn;
 public:	
 	
 	UPROPERTY(EditAnywhere)
 	float maxAngle = 120.0f;
+
+	UPROPERTY(EditAnywhere)
+		float rotationSpeed;
+
 	// Sets default values for this component's properties
 	UDoorBehaviour();	
 	// Called when the game starts
@@ -31,5 +35,6 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 	void OpenDoor(float DeltaTime);
+	void CloseDoor(float DeltaTime);
 	
 };

@@ -21,7 +21,7 @@ void UDoorBehaviour::BeginPlay()
 	Super::BeginPlay();
 
 	this->owner = GetOwner();
-		
+	this->TriggeringPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -32,28 +32,21 @@ void UDoorBehaviour::TickComponent( float DeltaTime, ELevelTick TickType, FActor
 
 	if (trigger->IsOverlappingActor(TriggeringPawn))
 		OpenDoor(DeltaTime);
+	else 
+	{
+		CloseDoor(DeltaTime);
+	}
 	
 }
 
 void UDoorBehaviour::OpenDoor(float DeltaTime)
 {
-	float speed = 1.5f;
-
-	float angle = maxAngle * DeltaTime * speed;
-
-	FRotator newRotation = FRotator(0.0f, -angle, 0.0f);
-
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *(owner->GetActorRotation().ToString()));
-
-	if (owner->GetActorRotation().Yaw > -maxAngle && !doorOpened)
-		this->owner->AddActorLocalRotation(newRotation);
-	else
-	{
-		if (!doorOpened)
-		{
-			doorOpened = true;
-			this->owner->SetActorRotation(FRotator(0.0f, -maxAngle, 0));
-		}
-	}
+	this->owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), FRotator(0.0f, -maxAngle, 0.0f), DeltaTime, rotationSpeed));
+		
 }
 
+void UDoorBehaviour::CloseDoor(float DeltaTime)
+{
+	this->owner->SetActorRotation(FMath::RInterpTo(owner->GetActorRotation(), FRotator(0.0f, 0.0f, 0.0f), DeltaTime, 3 * rotationSpeed));
+
+}
