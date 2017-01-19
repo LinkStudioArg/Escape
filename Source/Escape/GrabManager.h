@@ -12,11 +12,22 @@ class ESCAPE_API UGrabManager : public UActorComponent
 	GENERATED_BODY()
 private:
 	APlayerController * myPlayerController;
+
 	UPROPERTY(EditAnywhere)
 	float reachingDistance = 5.0f;
+
+	UPhysicsHandleComponent * physicsHandle = nullptr;
+
+	UInputComponent * input = nullptr;
+
+
 public:	
 	// Sets default values for this component's properties
 	UGrabManager();
+
+	void Grab();
+	void Release();
+	const FHitResult GetFirstPhysicsBodyInReach();
 
 	// Called when the game starts
 	virtual void BeginPlay() override;

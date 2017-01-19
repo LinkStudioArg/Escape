@@ -21,23 +21,54 @@ void UGrabManager::BeginPlay()
 	Super::BeginPlay();
 
 	myPlayerController = GetWorld()->GetFirstPlayerController();
+	physicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	input = GetOwner()->FindComponentByClass<UInputComponent>();
+
+	if (!physicsHandle) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s: UPhysicsHandleComponent missing!"), *(GetOwner()->GetName()));
+	}
+	if (!input)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s: UInputComponent missing!"), *(GetOwner()->GetName()));
+	}
+	else 
+	{
+		input->BindAction("Interact", IE_Pressed, this, &UGrabManager::Grab);
+		input->BindAction("Interact", IE_Released, this, &UGrabManager::Release);
+	}
 	
 }
-
 
 // Called every frame
 void UGrabManager::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
+}
 
+void UGrabManager::Grab() 
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grabbing"));	
+}
+
+void UGrabManager::Release() 
+{
+	UE_LOG(LogTemp, Warning, TEXT("Releasing"));
+}
+
+const FHitResult UGrabManager::GetFirstPhysicsBodyInReach()
+{
 	FVector viewpointLocation;
+
 	FRotator viewpointRotator;
 
 	myPlayerController->GetPlayerViewPoint(viewpointLocation, viewpointRotator);
 
 	//UE_LOG(LogTemp, Warning, TEXT("VP Location: %s, VP Rotator: %s"), *viewpointLocation.ToString(), * viewpointRotator.ToString());
 	FVector viewpointRotToVector = viewpointRotator.Vector();
+
 	viewpointRotToVector.Normalize();
+
 	FVector viewpointRayEnd = viewpointLocation + viewpointRotToVector * reachingDistance * 100.0f;
 
 	DrawDebugLine(GetWorld(), viewpointLocation, viewpointRayEnd, FColor(255, 0, 0), false, 0.0f, 0, .5f);
@@ -46,15 +77,6 @@ void UGrabManager::TickComponent( float DeltaTime, ELevelTick TickType, FActorCo
 
 	GetWorld()->LineTraceSingleByObjectType(hit, viewpointLocation, viewpointRayEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), FCollisionQueryParams(FName(TEXT("")), false, GetOwner()));
 
-	AActor * ActorHit = hit.GetActor();
-
-
-	if (ActorHit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *(ActorHit->GetName()));
-	}
-	
-	
+	return hit;
 
 }
-
