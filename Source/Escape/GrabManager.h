@@ -20,6 +20,10 @@ private:
 
 	UInputComponent * input = nullptr;
 
+	FVector GetViewpointEnd();
+
+	FVector GetViewpointStart();
+
 
 public:	
 	// Sets default values for this component's properties

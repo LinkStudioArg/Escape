@@ -44,19 +44,24 @@ void UGrabManager::BeginPlay()
 void UGrabManager::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
-}
 
-void UGrabManager::Grab() 
+	if (physicsHandle->GrabbedComponent) 
+	{
+		physicsHandle->SetTargetLocation(GetViewpointEnd());
+	}
+}
+FVector UGrabManager::GetViewpointStart()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grabbing"));	
+	FVector viewpointLocation;
+
+	FRotator viewpointRotator;
+
+	myPlayerController->GetPlayerViewPoint(viewpointLocation, viewpointRotator);
+
+	return viewpointLocation;
 }
 
-void UGrabManager::Release() 
-{
-	UE_LOG(LogTemp, Warning, TEXT("Releasing"));
-}
-
-const FHitResult UGrabManager::GetFirstPhysicsBodyInReach()
+FVector UGrabManager::GetViewpointEnd() 
 {
 	FVector viewpointLocation;
 
@@ -71,11 +76,44 @@ const FHitResult UGrabManager::GetFirstPhysicsBodyInReach()
 
 	FVector viewpointRayEnd = viewpointLocation + viewpointRotToVector * reachingDistance * 100.0f;
 
-	DrawDebugLine(GetWorld(), viewpointLocation, viewpointRayEnd, FColor(255, 0, 0), false, 0.0f, 0, .5f);
+	return viewpointRayEnd;
+}
+
+void UGrabManager::Grab() 
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Grabbing"));
+
+	auto hitResult = GetFirstPhysicsBodyInReach();
+
+	auto ComponentToGrab = hitResult.GetComponent();
+
+	auto actorHit = hitResult.GetActor();
+
+	if (actorHit)
+	{
+		physicsHandle->GrabComponent(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation() + ComponentToGrab->GetOwner()->GetActorUpVector() * 50.0f, true);
+	}
+}
+
+void UGrabManager::Release() 
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Releasing"));
+
+	physicsHandle->ReleaseComponent();
+}
+
+const FHitResult UGrabManager::GetFirstPhysicsBodyInReach()
+{
+	
+	FVector viewpointRayStart = GetViewpointStart();
+
+	FVector viewpointRayEnd = GetViewpointEnd();
+
+	//DrawDebugLine(GetWorld(), viewpointLocation, viewpointRayEnd, FColor(255, 0, 0), false, 0.0f, 0, .5f);
 
 	FHitResult hit;
 
-	GetWorld()->LineTraceSingleByObjectType(hit, viewpointLocation, viewpointRayEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), FCollisionQueryParams(FName(TEXT("")), false, GetOwner()));
+	GetWorld()->LineTraceSingleByObjectType(hit, viewpointRayStart, viewpointRayEnd, FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody), FCollisionQueryParams(FName(TEXT("")), false, GetOwner()));
 
 	return hit;
 
